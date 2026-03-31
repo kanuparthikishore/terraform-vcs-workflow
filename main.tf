@@ -1,32 +1,3 @@
-aws_region              = "us-east-1"
-environment             = "dev"
-instance_type           = "t3.micro"        # Small — cost saving
-key_name                = "dev_key"
-allowed_ssh_cidr        = "0.0.0.0/0"       # OK in dev; restrict in prod
-deploy_private_instance = false
-
-
-
-
-aws_region              = "us-east-1"
-environment             = "test"
-instance_type           = "t3.micro"         # Slightly larger for load tests
-key_name                = "test_key"
-allowed_ssh_cidr        = "10.0.0.0/8"       # Internal VPN range
-deploy_private_instance = true
-
-
-aws_region              = "us-east-1"
-environment             = "prod"
-instance_type           = "t3.micro"         # Production-sized
-key_name                = "prod_key"
-allowed_ssh_cidr        = "0.0.0.0/0"  # Your corporate NAT IP only!
-deploy_private_instance = false
-
-
-
-Yzjwpvn@937
-
 
 
 
@@ -57,7 +28,7 @@ data "aws_ami" "amazon_linux" {
   owners      = ["amazon"]
   filter {
     name   = "name"
-    values = ["al2023-ami-*-x86_64"]   # Amazon Linux 2023 (preferred over AL2)
+    values = ["al2023-ami-*-x86_64"] # Amazon Linux 2023 (preferred over AL2)
   }
 }
 
@@ -82,7 +53,7 @@ resource "aws_subnet" "public_1" {
   cidr_block              = "10.0.1.0/24"
   availability_zone       = data.aws_availability_zones.available.names[0]
   map_public_ip_on_launch = true
-  tags = { Name = "${var.environment}-public-1" }
+  tags                    = { Name = "${var.environment}-public-1" }
 }
 
 resource "aws_subnet" "public_2" {
@@ -90,21 +61,25 @@ resource "aws_subnet" "public_2" {
   cidr_block              = "10.0.2.0/24"
   availability_zone       = data.aws_availability_zones.available.names[1]
   map_public_ip_on_launch = true
-  tags = { Name = "${var.environment}-public-2" }
+  tags                    = { Name = "${var.environment}-public-2" }
 }
 
 resource "aws_subnet" "private_1" {
   vpc_id            = aws_vpc.main.id
   cidr_block        = "10.0.3.0/24"
   availability_zone = data.aws_availability_zones.available.names[0]
-  tags = { Name = "${var.environment}-private-1" }
+  tags              = { Name = "${var.environment}-private-1" }
 }
 
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.main.id
-  route { cidr_block = "0.0.0.0/0"; gateway_id = aws_internet_gateway.main.id }
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.main.id
+  }
   tags = { Name = "${var.environment}-public-rt" }
 }
+
 
 resource "aws_route_table_association" "public_1" {
   subnet_id      = aws_subnet.public_1.id
@@ -126,14 +101,14 @@ resource "aws_security_group" "ssh" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = [var.allowed_ssh_cidr]   # Restricted per environment!
+    cidr_blocks = [var.allowed_ssh_cidr] # Restricted per environment!
   }
   egress {
-         from_port   = 0
-	     to_port     = 0
-	     protocol    = "-1"
-         cidr_blocks = ["0.0.0.0/0"]
-    }
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
   tags = { Name = "${var.environment}-allow-ssh" }
 }
 
@@ -144,8 +119,8 @@ resource "aws_instance" "public_instance" {
   vpc_security_group_ids = [aws_security_group.ssh.id]
   key_name               = var.key_name
   tags = { Name = "${var.environment}-public-instance"
-           Environment = var.environment
-		   }
+    Environment = var.environment
+  }
 }
 
 resource "aws_instance" "private_instance" {
@@ -156,7 +131,7 @@ resource "aws_instance" "private_instance" {
   vpc_security_group_ids = [aws_security_group.ssh.id]
   key_name               = var.key_name
   tags = { Name = "${var.environment}-private-instance"
-           Environment = var.environment 
-		 }
-		   
+    Environment = var.environment
+  }
+
 }
