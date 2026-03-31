@@ -25,7 +25,7 @@ data "aws_ami" "amazon_linux" {
   owners      = ["amazon"]
   filter {
     name   = "name"
-    values = ["al2023-ami-*-x86_64"]   # Amazon  New Linux 2023 (preferred over AL2)
+    values = ["al2023-ami-*-x86_64"]   # AmazonN      ew Linux 2023 (preferred over AL2)
   }
 }
 
