@@ -25,7 +25,7 @@ data "aws_ami" "amazon_linux" {
   owners      = ["amazon"]
   filter {
     name   = "name"
-    values = ["al2023-ami-*-x86_64"]   # AmazonN      ew Linux 2023 (preferred over AL2)
+    values = ["al2023-ami-*-x86_64"] # AmazonN      ew Linux 2023 (preferred over AL2)
   }
 }
 
@@ -50,7 +50,7 @@ resource "aws_subnet" "public_1" {
   cidr_block              = "10.0.1.0/24"
   availability_zone       = data.aws_availability_zones.available.names[0]
   map_public_ip_on_launch = true
-  tags = { Name = "${var.environment}-public-1" }
+  tags                    = { Name = "${var.environment}-public-1" }
 }
 
 resource "aws_subnet" "public_2" {
@@ -58,22 +58,22 @@ resource "aws_subnet" "public_2" {
   cidr_block              = "10.0.2.0/24"
   availability_zone       = data.aws_availability_zones.available.names[1]
   map_public_ip_on_launch = true
-  tags = { Name = "${var.environment}-public-2" }
+  tags                    = { Name = "${var.environment}-public-2" }
 }
 
 resource "aws_subnet" "private_1" {
   vpc_id            = aws_vpc.main.id
   cidr_block        = "10.0.3.0/24"
   availability_zone = data.aws_availability_zones.available.names[0]
-  tags = { Name = "${var.environment}-private-1" }
+  tags              = { Name = "${var.environment}-private-1" }
 }
 
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.main.id
-  route { 
-    cidr_block = "0.0.0.0/0" 
-    gateway_id = aws_internet_gateway.main.id 
-    }
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.main.id
+  }
   tags = { Name = "${var.environment}-public-rt" }
 }
 
@@ -97,10 +97,12 @@ resource "aws_security_group" "ssh" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = [var.allowed_ssh_cidr]   # Restricted  as per environment!
+    cidr_blocks = [var.allowed_ssh_cidr] # Restricted  as per environment!
   }
   egress {
-    from_port   = 0; to_port = 0; protocol = "-1"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
   tags = { Name = "${var.environment}-allow-ssh" }
@@ -112,7 +114,9 @@ resource "aws_instance" "public_instance" {
   subnet_id              = aws_subnet.public_1.id
   vpc_security_group_ids = [aws_security_group.ssh.id]
   key_name               = var.key_name
-  tags = { Name = "${var.environment}-public-instance"; Environment = var.environment }
+  tags = { Name = "${var.environment}-public-instance"
+    Environment = var.environment
+  }
 }
 
 resource "aws_instance" "private_instance" {
@@ -122,5 +126,7 @@ resource "aws_instance" "private_instance" {
   subnet_id              = aws_subnet.private_1.id
   vpc_security_group_ids = [aws_security_group.ssh.id]
   key_name               = var.key_name
-  tags = { Name = "${var.environment}-private-instance"; Environment = var.environment }
+  tags = { Name = "${var.environment}-private-instance"
+    Environment = var.environment
+  }
 }
