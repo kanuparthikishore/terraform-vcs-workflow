@@ -16,7 +16,7 @@ variable "environment" {
 variable "instance_type" {
   description = "EC2 instance type"
   type        = string
-  default     = "t3.micro"   # t3 is current-gen; t2.micro is legacy
+  default     = "t3.micro" # t3 is current-gen; t2.micro is legacy
 }
 
 variable "key_name" {
@@ -27,7 +27,7 @@ variable "key_name" {
 variable "allowed_ssh_cidr" {
   description = "CIDR block allowed for SSH. Use 0.0.0.0/0 only for dev."
   type        = string
-  default     = "10.0.0.0/16"   # Restrict in production!
+  default     = "10.0.0.0/16" # Restrict in production!
 }
 
 variable "deploy_private_instance" {

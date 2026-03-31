@@ -10,7 +10,7 @@ output "public_instance_ip" {
 
 output "private_instance_id" {
   description = "Private instance ID (only if deploy_private_instance = true)"
-value       = var.deploy_private_instance ? aws_instance.private_instance[0].id : "not deployed"
+  value       = var.deploy_private_instance ? aws_instance.private_instance[0].id : "not deployed"
 }
 
 output "public_subnet_ids" {
