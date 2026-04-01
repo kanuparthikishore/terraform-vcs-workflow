@@ -16,7 +16,7 @@ variable "environment" {
 variable "instance_type" {
   description = "EC2 instance type"
   type        = string
-  default     = "t3.micro" # t3 is current-gen;yes  t2.micro is absolete
+  default     = "t3.micro" # t3 is current-gen;yes  also t2.micro is absolete
 }
 
 variable "key_name" {
