@@ -9,14 +9,14 @@ variable "environment" {
   type        = string
   validation {
     condition     = contains(["dev", "test", "prod"], var.environment)
-    error_message = "environment must be one of : dev, test, prod."
+    error_message = "environment  must be one of : dev, test, prod."
   }
 }
 
 variable "instance_type" {
   description = "EC2 instance type"
   type        = string
-  default     = "t3.micro" # t3 is current-gen; t2.micro is legacy
+  default     = "t3.micro" # t3 is current-gen;yes  t2.micro is legacy
 }
 
 variable "key_name" {
